@@ -18,9 +18,24 @@ export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 40);
+    const heroEl = document.getElementById("hero");
+
+    // Switch from the dark-background "frost" style to the light-background
+    // "glass" style once we've actually scrolled past the (tall, variable-
+    // height) hero section — not after an arbitrary fixed pixel offset,
+    // which flipped the style while still over the hero's dark background.
+    const handleScroll = () => {
+      const heroHeight = heroEl?.offsetHeight ?? window.innerHeight;
+      setIsScrolled(window.scrollY > heroHeight - 100);
+    };
+
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, []);
 
   return (
